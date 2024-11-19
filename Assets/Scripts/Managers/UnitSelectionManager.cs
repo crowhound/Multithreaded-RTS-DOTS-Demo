@@ -18,6 +18,8 @@ namespace SF.EntitiesModule
         public event EventHandler OnSelectionAreaStart;
         public event EventHandler OnSelectionAreaEnd;
 
+        public int UnitsPhysicsLayerIndex = 6;
+
         private Vector2 _selectionStartMousePosition;
 
         private void Awake()
@@ -101,7 +103,31 @@ namespace SF.EntitiesModule
                     }
 
                 }
+                else // Single Selection
+                {
+                    entityQuery = entityManager.CreateEntityQuery(typeof(PhysicsWorldSingleton));
+                    PhysicsWorldSingleton physicsWorldSingleton = entityQuery.GetSingleton<PhysicsWorldSingleton>();
+                    CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
+                    UnityEngine.Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
+                    RaycastInput rayCastInput = new RaycastInput {
+                        Start = cameraRay.GetPoint(0f),
+                        End = cameraRay.GetPoint(9999f),
+                        Filter = new CollisionFilter { 
+                            BelongsTo = ~0u,
+                            CollidesWith = 1u << UnitsPhysicsLayerIndex,
+                            GroupIndex = 0,
+                        }
+                    };
+
+                    if(collisionWorld.CastRay(rayCastInput, out Unity.Physics.RaycastHit raycastHit))
+                    {
+                        if(entityManager.HasComponent<Unit>(raycastHit.Entity))
+                        {
+                            entityManager.SetComponentEnabled<Selected>(raycastHit.Entity,true);
+                        }
+                    }
+                }
 
                 OnSelectionAreaEnd?.Invoke(this, EventArgs.Empty);
             }
