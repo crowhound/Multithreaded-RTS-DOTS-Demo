@@ -60,6 +60,18 @@ namespace SF.EntitiesModule
             ref PhysicsVelocity physicsVelocity)
         {
             float3 moveDirection = unitMove.TargetPosition - localTransform.Position;
+
+            float reachedTargetDistancedSq = 2f;
+            
+            // Check if we are within stopping distance of our target position.
+            if(math.lengthsq(moveDirection) < reachedTargetDistancedSq)
+            {
+                // If we are within stopping distance stop moving.
+                physicsVelocity.Linear = float3.zero;
+                physicsVelocity.Angular = float3.zero;
+                return;
+            }
+
             moveDirection = math.normalize(moveDirection);
 
             localTransform.Rotation =
