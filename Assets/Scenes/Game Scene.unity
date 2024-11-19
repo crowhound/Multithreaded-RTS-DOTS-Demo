@@ -810,7 +810,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba619be3badf1b249ad1e14e8201f7f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _selectionAreaRectTransform: {fileID: 1348583683}
+  _selectionAreaRectTransform: {fileID: 1331893785}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
