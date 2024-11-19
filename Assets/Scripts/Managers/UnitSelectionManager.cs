@@ -4,6 +4,7 @@ using SF.EntitiesModule;
 
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 
@@ -64,14 +65,16 @@ namespace SF.EntitiesModule
 
                 Rect selectionAreaRect = GetSelectionAreaRect();
                 float selectionAreaSize = selectionAreaRect.width + selectionAreaRect.height;
-                float multipleSelectionSizeMin = 40f;
+                float multipleSelectionSizeMin = 50f;
                 bool isMultipleSelection = selectionAreaSize > multipleSelectionSizeMin;
 
                 if(isMultipleSelection) // Multiple Selection
                 {
-                    // First we get all Entities with a LocalTransform and Unit IComponentData struct attached.
-                    // Than we make sure we only select Units that are selectable. 
-                    // Note WithPresent method makes sure they have that IComponentData struct, but it will allow for disabled and enabled Selected IComponentData. 
+                    /* First we get all Entities with a LocalTransform and Unit IComponentData struct attached.
+                    * Than we make sure we only select Units that are selectable. 
+                     Note WithPresent method makes sure they have that IComponentData struct, but it will allow for disabled and enabled Selected IComponentData. 
+                    */
+
                     entityQuery = new EntityQueryBuilder(Allocator.Temp)
                                                     .WithAll<LocalTransform, Unit>()
                                                     .WithPresent<Selected>()
@@ -105,8 +108,19 @@ namespace SF.EntitiesModule
                 }
                 else // Single Selection
                 {
+                    /* This Entity query syntax does the exact samething 
+                     * as the entityManager.CreateEntityQuery. One just has a LINQ like format
+                    new EntityQueryBuilder(Allocator.Temp)
+                                                    .WithAll<PhysicsWorldSingleton>()
+                                                    .Build(entityManager);
+                    */
                     entityQuery = entityManager.CreateEntityQuery(typeof(PhysicsWorldSingleton));
+
+                    // PhysicsWorldSingleton is used to access Entity world simulations for physics.
                     PhysicsWorldSingleton physicsWorldSingleton = entityQuery.GetSingleton<PhysicsWorldSingleton>();
+                    // CollisionWorld is a collection of rigidbodies wrapped by a bounding volume hierarchy
+                    // To allow for collisioon queries like raycast, overlap testing, and so forth.
+
                     CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
                     UnityEngine.Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -114,7 +128,10 @@ namespace SF.EntitiesModule
                         Start = cameraRay.GetPoint(0f),
                         End = cameraRay.GetPoint(9999f),
                         Filter = new CollisionFilter { 
-                            BelongsTo = ~0u,
+                            BelongsTo = ~0u, // u for setting a uint. ~ inverts the zero values in the bitmask to all ones.
+                            // 1 in a layer bitmask is physics layer index 0. 
+                            // We use a bit shift operator to move the value over to the index we want.
+                            // Physics layer on layer index 6 is 1u << 6 as a uint.
                             CollidesWith = 1u << UnitsPhysicsLayerIndex,
                             GroupIndex = 0,
                         }
@@ -152,6 +169,8 @@ namespace SF.EntitiesModule
                 // Get the native array of our Unit Mover IDataComponents.
                 NativeArray<UnitMover> unitMoverArray = entityQuery.ToComponentDataArray<UnitMover>(Allocator.Temp);
 
+                NativeArray<float3> movePositionArray = GenerateMovePositionArray(mouseWorldPosition,entityArray.Length);
+
                 // Setting all Unit movers target position.
                 // Remember IComponentData are normally structs so
                 // You can't just modify the value. You have to copy back the new data into the entity array.
@@ -160,7 +179,7 @@ namespace SF.EntitiesModule
                     // Get a copy of the structs current value
                     UnitMover unitMover = unitMoverArray[i];
                     // Set the structs target position value.
-                    unitMover.TargetPosition = mouseWorldPosition;
+                    unitMover.TargetPosition = movePositionArray[i];
 
                     // Set the component data back.
                     // You will need to update the actual array component data still.
@@ -192,6 +211,54 @@ namespace SF.EntitiesModule
                 upperRightCorner.y - lowerLeftCorner.y
             );
         }
-    }
 
+        private NativeArray<float3> GenerateMovePositionArray(float3 targetPosition, int positionCount)
+        {
+            NativeArray<float3> positionArray = new NativeArray<float3>(positionCount,Allocator.Temp);
+
+            if(positionCount == 0)
+            {
+                return positionArray;
+            }
+            positionArray[0] = targetPosition;
+            if(positionCount == 1)
+            {
+                return positionArray;
+            }
+
+            float ringSize = 2.2f;
+            int ring = 0;
+            int positionIndex = 1;
+
+            
+            while(positionIndex < positionCount)
+            {
+                // On the inermost position ring have only three positions for the units
+                int ringPositionCount = 3 + ring * 2;
+
+                for(int i = 0; i < ringPositionCount; i++ )
+                {
+                    float angle = i * (math.PI2 / ringPositionCount);
+                    // We start with a vector facing directly to the right.
+                    // Than multiply the angle to make the ring positions.
+                    float3 ringVector = math.rotate(quaternion.RotateY(angle), new float3(ringSize * (ring + 1),0,0));
+                    float3 ringPosition = targetPosition + ringVector;
+
+                    positionArray[positionIndex] = ringPosition;
+                    positionIndex++;
+
+                    // Have we generated all the positions for the ring
+                    if(positionIndex >= positionCount)
+                    {
+                        break;
+                    }
+                }
+
+                ring++;
+
+            } // End of while Loop
+
+            return positionArray;
+        }
+    }
 }
