@@ -19,8 +19,6 @@ namespace SF.EntitiesModule
         public event EventHandler OnSelectionAreaStart;
         public event EventHandler OnSelectionAreaEnd;
 
-        public int UnitsPhysicsLayerIndex = 6;
-
         private Vector2 _selectionStartMousePosition;
 
         private void Awake()
@@ -150,7 +148,7 @@ namespace SF.EntitiesModule
                             // 1 in a layer bitmask is physics layer index 0. 
                             // We use a bit shift operator to move the value over to the index we want.
                             // Physics layer on layer index 6 is 1u << 6 as a uint.
-                            CollidesWith = 1u << UnitsPhysicsLayerIndex,
+                            CollidesWith = 1u << GameAssetManager.UNITS_LAYER,
                             GroupIndex = 0,
                         }
                     };
