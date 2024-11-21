@@ -56,6 +56,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6920537795773702795, guid: 8383d826283d4784ab67c154b29bfa0f, type: 3}
+      propertyPath: m_Height
+      value: 3.302929
+      objectReference: {fileID: 0}
+    - target: {fileID: 6920537795773702795, guid: 8383d826283d4784ab67c154b29bfa0f, type: 3}
+      propertyPath: m_Center.y
+      value: 1.1514645
+      objectReference: {fileID: 0}
+    - target: {fileID: 6920537795773702795, guid: 8383d826283d4784ab67c154b29bfa0f, type: 3}
+      propertyPath: m_Center.z
+      value: 0.69
+      objectReference: {fileID: 0}
+    - target: {fileID: 6920537795773702795, guid: 8383d826283d4784ab67c154b29bfa0f, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6920537795773702795, guid: 8383d826283d4784ab67c154b29bfa0f, type: 3}
+      propertyPath: m_ProvidesContacts
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7504299331642455173, guid: 8383d826283d4784ab67c154b29bfa0f, type: 3}
       propertyPath: m_Name
       value: Zombie Unit
@@ -64,6 +84,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 85cd5279f313d294c8d4eb59ece3cb5b, type: 2}
+    - target: {fileID: 7962261639602701252, guid: 8383d826283d4784ab67c154b29bfa0f, type: 3}
+      propertyPath: SearchRange
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 9197095436809048775, guid: 8383d826283d4784ab67c154b29bfa0f, type: 3}
       propertyPath: MoveSpeed
       value: 6
