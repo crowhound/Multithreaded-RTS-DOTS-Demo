@@ -56,10 +56,24 @@ namespace SF.EntitiesModule
                 // Get the native array of entities from the query
                 NativeArray<Entity> entityArray = entityQuery.ToEntityArray(Allocator.Temp);
 
+                NativeArray<Selected> selectedArray = entityQuery.ToComponentDataArray<Selected>(Allocator.Temp);
+
                 // Deselect all units that were previously selected.
                 for(int i = 0; i < entityArray.Length; i++)
                 {                             
                     entityManager.SetComponentEnabled<Selected>(entityArray[i], false);
+                    
+                    // Raise the deselection event for the units that were previously selected, but are not not selected.
+                    Selected selected = selectedArray[i];
+                    selected.OnDeselected = true;
+
+                    // We can't just set the array because above where we disable the selected entity components it will change the result of the saved entity
+                    // selectedArray[i] = selected; This will error out due to the above because now
+                    // selectedArray.length = 0
+
+                    // This is an example situation where we use entity manager.setComponent 
+                    // instead of writing back values to an entity queru array.
+                    entityManager.SetComponentData(entityArray[i],selected);
                 }
 
 
@@ -102,6 +116,10 @@ namespace SF.EntitiesModule
 
                             // Set the units in the selection as selected.
                             entityManager.SetComponentEnabled<Selected>(entityArray[i], true);
+
+                            Selected selected = entityManager.GetComponentData<Selected>(entityArray[i]);
+                            selected.OnSelected = true;
+                            entityManager.SetComponentData(entityArray[i], selected);
                         }
                     }
 
@@ -142,6 +160,11 @@ namespace SF.EntitiesModule
                         if(entityManager.HasComponent<Unit>(raycastHit.Entity))
                         {
                             entityManager.SetComponentEnabled<Selected>(raycastHit.Entity,true);
+                            
+                            // Raise the selection event on the entity.
+                            Selected selected = entityManager.GetComponentData<Selected>(raycastHit.Entity);
+                            selected.OnSelected = true;
+                            entityManager.SetComponentData(raycastHit.Entity,selected);
                         }
                     }
                 }

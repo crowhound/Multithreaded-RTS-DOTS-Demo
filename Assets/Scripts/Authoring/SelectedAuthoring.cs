@@ -31,5 +31,10 @@ namespace SF.EntitiesModule
         /// </summary>
         public Entity VisualEntity;
         public float ShowScale;
+
+
+        // Using bools as a fake event in DOTS
+        public bool OnSelected;
+        public bool OnDeselected;
     }
 }
