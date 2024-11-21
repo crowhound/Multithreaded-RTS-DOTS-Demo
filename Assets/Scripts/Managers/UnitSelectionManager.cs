@@ -1,7 +1,5 @@
 using System;
 
-using SF.EntitiesModule;
-
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
