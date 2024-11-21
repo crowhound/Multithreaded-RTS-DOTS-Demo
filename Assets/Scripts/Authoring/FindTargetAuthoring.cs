@@ -7,6 +7,10 @@ namespace SF.EntitiesModule
     {
         public float SearchRange;
         public FactionTypes TargetFaction;
+
+        /// <summary>
+        /// How many second before trying to search for new targets.
+        /// </summary>
         public float TimerMax;
 
         public class FindTargetAuthoringBaker : Baker<FindTargetAuthoring>
@@ -29,6 +33,9 @@ namespace SF.EntitiesModule
         public float SearchRange;
         public FactionTypes TargetFaction;
         public float Timer;
+        /// <summary>
+        /// How many second before trying to search for new targets.
+        /// </summary>
         public float TimerMax;
     }
 }
