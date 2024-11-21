@@ -85,6 +85,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 85cd5279f313d294c8d4eb59ece3cb5b, type: 2}
     - target: {fileID: 7962261639602701252, guid: 8383d826283d4784ab67c154b29bfa0f, type: 3}
+      propertyPath: TimerMax
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7962261639602701252, guid: 8383d826283d4784ab67c154b29bfa0f, type: 3}
       propertyPath: SearchRange
       value: 2
       objectReference: {fileID: 0}
