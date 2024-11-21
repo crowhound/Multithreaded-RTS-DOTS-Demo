@@ -1,3 +1,5 @@
+using SF.EntitiesModule.Combat;
+
 using Unity.Burst;
 using Unity.Entities;
 
@@ -17,7 +19,7 @@ namespace SF.EntitiesModule
                     RefRO<Target>>())
             {
                 // If the TargetEntity is not null continue to next interation
-                if(target.ValueRO.TargetEntity != Entity.Null)
+                if(target.ValueRO.TargetEntity == Entity.Null)
                     continue;
 
                 shootAttack.ValueRW.Timer -= SystemAPI.Time.DeltaTime;
@@ -28,6 +30,9 @@ namespace SF.EntitiesModule
 
                 shootAttack.ValueRW.Timer = shootAttack.ValueRO.TimerMax;
 
+                RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(target.ValueRO.TargetEntity);
+                int damageAmount = 1;
+                targetHealth.ValueRW.HealthAmount -= damageAmount;
 
             } // End of Shoot Attack/Target foreach
         }
