@@ -153,7 +153,9 @@ namespace SF.EntitiesModule
 
                     if(collisionWorld.CastRay(rayCastInput, out Unity.Physics.RaycastHit raycastHit))
                     {
-                        if(entityManager.HasComponent<Unit>(raycastHit.Entity))
+                        // Make sure the entity being checked is a unit and is a selectable unit.
+                        if(entityManager.HasComponent<Unit>(raycastHit.Entity) 
+                            && entityManager.HasComponent<Selected>(raycastHit.Entity))
                         {
                             entityManager.SetComponentEnabled<Selected>(raycastHit.Entity,true);
                             

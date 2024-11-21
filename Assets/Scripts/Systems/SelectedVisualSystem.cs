@@ -13,17 +13,20 @@ namespace SF.EntitiesModule
         {
             foreach(RefRO<Selected> selected in SystemAPI.Query<RefRO<Selected>>().WithPresent<Selected>())
             {
+                // Make sure deselection is aboive the selection check.
+                if(selected.ValueRO.OnDeselected)
+                {
+                    RefRW<LocalTransform> visualLocalTransform = SystemAPI.GetComponentRW<LocalTransform>(selected.ValueRO.VisualEntity);
+                    visualLocalTransform.ValueRW.Scale = 0;
+                }
+
                 // Only update the visuals during the frame one of the events were going off.
                 if(selected.ValueRO.OnSelected)
                 {
                     RefRW<LocalTransform> visualLocalTransform = SystemAPI.GetComponentRW<LocalTransform>(selected.ValueRO.VisualEntity);
                     visualLocalTransform.ValueRW.Scale = selected.ValueRO.ShowScale;
                 }
-                if(selected.ValueRO.OnDeselected)
-                {
-                    RefRW<LocalTransform> visualLocalTransform = SystemAPI.GetComponentRW<LocalTransform>(selected.ValueRO.VisualEntity);
-                    visualLocalTransform.ValueRW.Scale = 0;
-                }
+
             }
         }
     }
